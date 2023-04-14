@@ -1,0 +1,19 @@
+FUN fibonacci(n)
+	VAR el1 = 0
+	VAR el2 = 1
+	VAR next = el1 + el2
+
+	PRINT(el1)
+	PRINT(el2)
+
+	WHILE next <= n THEN
+	    PRINT(next)
+        VAR el1 = el2
+        VAR el2 = next
+        VAR next = el1 + el2
+    END
+END
+
+VAR a = fibonacci(100)
+PRINT(a)
+

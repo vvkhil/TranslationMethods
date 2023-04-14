@@ -1,0 +1,16 @@
+FUN fact(n)
+	VAR result = 1
+	IF n < 0 THEN
+	    PRINT("Error! Factorial of a negative number doesn't exist.")
+	ELSE
+	    FOR i = 1 TO n+1 THEN
+		    VAR result = result * i
+	    END
+    END
+	RETURN result
+END
+
+VAR a = fact(5)
+PRINT(a)
+
+
