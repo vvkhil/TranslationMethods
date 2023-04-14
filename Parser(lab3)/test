@@ -1,0 +1,9 @@
+FUN fact(n)
+	VAR a ba = 1
+	IF n < 0 THEN
+	    PRINT(result)
+	END
+END
+
+fact(-1)
+

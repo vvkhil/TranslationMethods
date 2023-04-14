@@ -1,0 +1,59 @@
+statements            : NEWLINE* statement (NEWLINE+ statement)* NEWLINE*
+
+statement		      : KEYWORD:RETURN expression?
+						    : KEYWORD:CONTINUE
+						    : KEYWORD:BREAK
+						    : expression
+
+expression            : KEYWORD:VAR IDENTIFIER EQ expression
+                      : comp-expression ((KEYWORD:AND|KEYWORD:OR) comp-expression)*
+
+comp-expression       : NOT comp-expression
+                      : arith-expression ((EE|LT|GT|LTE|GTE) arith-expression)*
+
+arith-expression      :	term ((PLUS|MINUS) term)*
+
+term                  : factor ((MUL|DIV) factor)*
+
+factor                : (PLUS|MINUS) factor
+                      : power
+
+power                 : call (POW factor)*
+
+call                  : atom (LPAREN (expression (COMMA expression)*)? RPAREN)?
+
+atom                  : INT|FLOAT|STRING|IDENTIFIER
+                      : LPAREN expression RPAREN
+                      : list-expression
+                      : if-expression
+                      : for-expression
+                      : while-expression
+                      : func-definition
+
+list-expression       : LSQUARE (expression (COMMA expression)*)? RSQUARE
+
+if-expression         : KEYWORD:IF expression KEYWORD:THEN
+                      (statement if-expression-b|if-expression-c?)
+                      | (NEWLINE statements KEYWORD:END|if-expression-b|if-expression-c)
+
+if-expression-b       : KEYWORD:ELIF expression KEYWORD:THEN
+                      (statement if-expression-b|if-expression-c?)
+                      | (NEWLINE statements KEYWORD:END|if-expression-b|if-expression-c)
+
+if-expression-c       : KEYWORD:ELSE
+                      statement
+                      | (NEWLINE statements KEYWORD:END)
+
+for-expression        : KEYWORD:FOR IDENTIFIER EQ expression KEYWORD:TO expression
+                      (KEYWORD:STEP expression)? KEYWORD:THEN
+                      statement
+                      | (NEWLINE statements KEYWORD:END)
+
+while-expression      : KEYWORD:WHILE expression KEYWORD:THEN
+                      statement
+                      | (NEWLINE statements KEYWORD:END)
+
+func-definition       : KEYWORD:FUN IDENTIFIER?
+                      LPAREN (IDENTIFIER (COMMA IDENTIFIER)*)? RPAREN
+                      (ARROW expression)
+                      | (NEWLINE statements KEYWORD:END)
