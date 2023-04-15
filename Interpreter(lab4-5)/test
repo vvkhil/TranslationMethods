@@ -1,0 +1,30 @@
+VAR a = [7, 4, 2]
+VAR b = [9, 8, -1]
+
+VAR c = a * b
+
+FUN min(elements)
+    VAR new_elements = []
+
+    VAR check = 99999999
+    FOR i = 0 TO LEN(elements) THEN
+        IF elements/i < check THEN
+            VAR check = elements/i
+        END
+    END
+    RETURN check
+END
+
+FUN max(elements)
+    VAR new_elements = []
+
+    VAR check = -99999999
+    FOR i = 0 TO LEN(elements) THEN
+        IF elements/i > check THEN
+            VAR check = elements/i
+        END
+    END
+    RETURN check
+END
+
+
