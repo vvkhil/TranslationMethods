@@ -71,10 +71,12 @@ class Function(BaseFunction):
         execute_context = self.generate_new_context()
 
         res.register(self.check_and_populate_arguments(self.arguments_names, arguments, execute_context))
+
         if res.should_return():
             return res
 
         value = res.register(interpreter.visit_method(self.body_node, execute_context))
+
         if res.should_return() and res.func_return_value is None:
             return res
 
@@ -86,6 +88,7 @@ class Function(BaseFunction):
         copy = Function(self.name, self.body_node, self.arguments_names, self.should_auto_return)
         copy.set_context(self.context)
         copy.set_position(self.start_position, self.end_position)
+
         return copy
 
     def __repr__(self):
@@ -139,6 +142,7 @@ class BuiltInFunction(BaseFunction):
         while True:
 
             text = input()
+
             try:
                 number = int(text)
                 break
@@ -184,6 +188,7 @@ class BuiltInFunction(BaseFunction):
         list_ = execute_context.symbol_table.get("list")
 
         if not isinstance(list_, List):
+
             return RTResult().failure(RTError(
                 self.start_position, self.end_position,
                 "argument must be list",
@@ -197,6 +202,7 @@ class BuiltInFunction(BaseFunction):
         value = execute_context.symbol_table.get("value")
 
         if not isinstance(list_, List):
+
             return RTResult().failure(RTError(
                 self.start_position, self.end_position,
                 "First argument must be list",
@@ -212,6 +218,7 @@ class BuiltInFunction(BaseFunction):
         second_list = execute_context.symbol_table.get("second_list")
 
         if not isinstance(first_list, List):
+
             return RTResult().failure(RTError(
                 self.start_position, self.end_position,
                 "First argument must be list",
@@ -219,6 +226,7 @@ class BuiltInFunction(BaseFunction):
             ))
 
         if not isinstance(second_list, List):
+
             return RTResult().failure(RTError(
                 self.start_position, self.end_position,
                 "Second argument must be list",
@@ -234,6 +242,7 @@ class BuiltInFunction(BaseFunction):
         index = execute_context.symbol_table.get("index")
 
         if not isinstance(list_, List):
+
             return RTResult().failure(RTError(
                 self.start_position, self.end_position,
                 "First argument must be list",
@@ -241,6 +250,7 @@ class BuiltInFunction(BaseFunction):
             ))
 
         if not isinstance(index, Number):
+
             return RTResult().failure(RTError(
                 self.start_position, self.end_position,
                 "Second argument must be number",
@@ -250,6 +260,7 @@ class BuiltInFunction(BaseFunction):
         try:
             element = list_.elements.pop(index.value)
         except:
+
             return RTResult().failure(RTError(
                 self.start_position, self.end_position,
                 'Element at this index could not be removed from list because index is out of bounds',
@@ -262,6 +273,7 @@ class BuiltInFunction(BaseFunction):
         fn = execute_context.symbol_table.get("fn")
 
         if not isinstance(fn, String):
+
             return RTResult().failure(RTError(
                 self.start_position, self.end_position,
                 "Second argument must be string",
@@ -274,6 +286,7 @@ class BuiltInFunction(BaseFunction):
             with open(fn, "r") as f:
                 script = f.read()
         except Exception as e:
+
             return RTResult().failure(RTError(
                 self.start_position, self.end_position,
                 f"Failed to load script \"{fn}\"\n" + str(e),
@@ -283,6 +296,7 @@ class BuiltInFunction(BaseFunction):
         _, error = run(fn, script)
 
         if error:
+
             return RTResult().failure(RTError(
                 self.start_position, self.end_position,
                 f"Failed to finish executing script \"{fn}\"\n" +
@@ -349,6 +363,7 @@ class Interpreter:
     def visit_method(self, node, context):
         method_name = f'visit_{type(node).__name__}'
         method = getattr(self, method_name, self.no_visit_method)
+
         return method(node, context)
 
     def no_visit_method(self, node, context):
@@ -388,7 +403,7 @@ class Interpreter:
         elif node.op_token.type == DIV:
             result, error = left.dived_by(right)
 
-        if node.op_token.type == PLUS:
+        elif node.op_token.type == PLUS:
             result, error = left.added_to(right)
 
         elif node.op_token.type == MINUS:
@@ -423,6 +438,7 @@ class Interpreter:
 
         if error:
             return res.failure(error)
+
         else:
             return res.success(result.set_position(node.start_position, node.end_position))
 
@@ -443,15 +459,18 @@ class Interpreter:
 
         if error:
             return res.failure(error)
+
         else:
             return res.success(number.set_position(node.start_position, node.end_position))
 
     def visit_NumberNode(self, node, context):
+
         return RTResult().success(
             Number(node.token.value).set_context(context).set_position(node.start_position, node.end_position)
         )
 
     def visit_StringNode(self, node, context):
+
         return RTResult().success(
             String(node.token.value).set_context(context).set_position(node.start_position, node.end_position)
         )
@@ -462,6 +481,7 @@ class Interpreter:
         value = context.symbol_table.get(var_name)
 
         if not value:
+
             return res.failure(RTError(
                 node.start_position, node.end_position,
                 f"'{var_name}' is not defined",
@@ -569,6 +589,7 @@ class Interpreter:
 
         if step_value.value >= 0:
             condition = lambda: i < end_value.value
+
         else:
             condition = lambda: i > end_value.value
 
@@ -577,6 +598,7 @@ class Interpreter:
             i += step_value.value
 
             value = res.register(self.visit_method(node.body_node, context))
+
             if res.should_return() and res.loop_should_continue == False and res.loop_should_break == False:
                 return res
 
@@ -594,9 +616,11 @@ class Interpreter:
         )
 
     def visit_ContinueNode(self, node, context):
+
         return RTResult().success_continue()
 
     def visit_BreakNode(self, node, context):
+
         return RTResult().success_break()
 
     def visit_FuncDefinitionNode(self, node, context):
